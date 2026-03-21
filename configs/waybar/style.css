@@ -189,3 +189,9 @@ window#waybar {
 }
 
 
+
+#custom-arch {
+    font-size: 16px;
+    padding: 0 10px;
+    color: #1793d1;
+}
