@@ -1,0 +1,5 @@
+wallpapers/*.jpg
+wallpapers/*.png
+wallpapers/*.webp
+wallpapers/*.jpeg
+!wallpapers/wallpaper.jpg
