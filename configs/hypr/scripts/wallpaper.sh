@@ -28,8 +28,9 @@ wal -i "$WALLPAPER" -n 2>/dev/null
 # Sync hyprlock wallpaper
 ~/.config/hypr/scripts/hyprlock_wall.sh "$WALLPAPER"
 
-# Sync SDDM login screen wallpaper
+# Sync SDDM colors and wallpaper
 sudo cp "$WALLPAPER" /usr/share/sddm/themes/catppuccin/backgrounds/current-wall.jpg 2>/dev/null
+~/.config/hypr/scripts/sddm-colors.sh
 
 # Reload hyprland colors
 hyprctl reload 2>/dev/null
