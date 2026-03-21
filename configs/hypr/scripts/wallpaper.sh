@@ -1,6 +1,5 @@
 #!/bin/bash
 # wallpaper.sh — MASU Hyprland v2.0
-# Applies wallpaper, runs pywal, syncs all colors, reloads everything
 
 if [ -n "$1" ]; then
     WALLPAPER="$1"
@@ -14,10 +13,7 @@ fi
 echo "Applying: $WALLPAPER"
 
 # Set wallpaper
-swww img "$WALLPAPER" \
-    --transition-type random \
-    --transition-duration 2 \
-    --transition-fps 60 &
+swww img "$WALLPAPER" --transition-type random --transition-duration 2 --transition-fps 60 &
 
 # Generate pywal colors
 wal -i "$WALLPAPER" -n 2>/dev/null
@@ -31,6 +27,9 @@ wal -i "$WALLPAPER" -n 2>/dev/null
 
 # Sync hyprlock wallpaper
 ~/.config/hypr/scripts/hyprlock_wall.sh "$WALLPAPER"
+
+# Sync SDDM login screen wallpaper
+sudo cp "$WALLPAPER" /usr/share/sddm/themes/catppuccin/backgrounds/current-wall.jpg 2>/dev/null
 
 # Reload hyprland colors
 hyprctl reload 2>/dev/null
