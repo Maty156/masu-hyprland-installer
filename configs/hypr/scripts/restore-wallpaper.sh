@@ -11,7 +11,7 @@ WALLPAPER=$(cat "$WALLPAPER_CACHE" 2>/dev/null)
 [ -f "$WALLPAPER" ] || WALLPAPER="$FALLBACK"
 [ -f "$WALLPAPER" ] || exit 1
 
-swww img "$WALLPAPER" --transition-type fade --transition-duration 2 --transition-fps 60
+awww img "$WALLPAPER" --transition-type fade --transition-duration 2 --transition-fps 60
 
 wal -i "$WALLPAPER" -n -q
 

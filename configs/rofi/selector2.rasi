@@ -1,94 +1,110 @@
-/* MASU Wallpaper Picker */
-@import "~/.config/rofi/theme.rasi"
-
 configuration {
-    show-icons:       true;
-    font:             "JetBrainsMono Nerd Font 10";
+    show-icons:          true;
+    font:                "JetBrainsMono Nerd Font 10";
 }
 
+@theme "~/.config/rofi/theme.rasi"
+
 window {
-    width:            80%;
-    background-color: #0a0a14cc;
-    border:           1px;
-    border-color:     #ffffff15;
-    border-radius:    16px;
+    fullscreen:          false;
+    width:               100%;
+    background-color:    #00000088;
+    border-color:        transparent;
 }
 
 mainbox {
-    children:         [ "inputbar", "listview" ];
-    background-color: transparent;
-    spacing:          8px;
-    padding:          12px;
+    orientation:         horizontal;
+    children:            [ "dummy", "frame", "dummy" ];
+    background-color:    transparent;
+    spacing:             0px;
+}
+
+dummy {
+    width:               3em;
+    expand:              false;
+    background-color:    transparent;
+}
+
+frame {
+    children:            [ "inputbar", "listview" ];
+    background-color:    transparent;
+    spacing:             10px;
+    expand:              true;
 }
 
 inputbar {
-    background-color: #ffffff08;
-    border:           1px;
-    border-color:     #ffffff18;
-    border-radius:    10px;
-    padding:          6px 16px;
-    spacing:          8px;
-    margin:           0px 250px;
-    children:         [ prompt, entry ];
+    enabled:             true;
+    background-color:    #0d0d1acc;
+    border:              1px;
+    border-color:        #ffffff22;
+    border-radius:       10px;
+    padding:             6px 16px;
+    spacing:             8px;
+    margin:              0.5em 8em;
+    children:            [ prompt, entry ];
 }
 
 prompt {
-    color:            #7aa2f7cc;
-    background-color: transparent;
+    color:               #7aa2f7cc;
+    background-color:    transparent;
 }
 
 entry {
-    placeholder:      "Search wallpapers...";
-    placeholder-color:#ffffff30;
-    color:            #cdd6f4cc;
-    background-color: transparent;
+    color:               #cdd6f4cc;
+    placeholder:         "search...";
+    placeholder-color:   #ffffff33;
+    background-color:    transparent;
 }
 
 listview {
-    columns:          3;
-    lines:            2;
-    spacing:          8px;
-    padding:          4px;
-    flow:             horizontal;
-    fixed-width:      true;
-    fixed-height:     false;
-    cycle:            true;
-    background-color: transparent;
+    enabled:             true;
+    layout:              vertical;
+    spacing:             0.6em;
+    padding:             1em 1em;
+    columns:             3;
+    lines:               2;
+    dynamic:             false;
+    fixed-height:        false;
+    fixed-columns:       true;
+    background-color:    transparent;
 }
 
 element {
-    orientation:      vertical;
-    padding:          4px;
-    spacing:          0px;
-    border-radius:    10px;
-    background-color: #ffffff06;
-    border:           2px;
-    border-color:     #ffffff10;
-    cursor:           pointer;
-}
-
-element selected.normal {
-    background-color: #7aa2f710;
-    border-color:     #7aa2f7cc;
+    orientation:         vertical;
+    spacing:             0px;
+    padding:             0px;
+    background-color:    transparent;
+    border-radius:       0.8em;
+    border:              3px;
+    border-color:        #ffffff11;
+    cursor:              pointer;
+    expand:              false;
 }
 
 element normal.normal {
-    background-color: #ffffff06;
-    border-color:     #ffffff10;
+    border-color:        #ffffff11;
+}
+
+element selected.normal {
+    background-color:    transparent;
+    border-color:        #7aa2f7ff;
 }
 
 element-icon {
-    size:             9%;
-    cursor:           inherit;
-    background-color: transparent;
-    border-radius:    8px;
+    size:                11em;
+    border-radius:       0.6em;
+    margin:              0;
+    padding:             0;
+    background-color:    transparent;
+    expand:              false;
 }
 
 element-text {
-    vertical-align:   0.5;
-    horizontal-align: 0.5;
-    padding:          3px;
-    color:            #00000000;
-    background-color: transparent;
-    font:             "JetBrainsMono Nerd Font 1";
+    padding:             0px;
+    background-color:    transparent;
+    horizontal-align:    0.5;
+    vertical-align:      0.5;
+    text-color:          #00000000;
+    font:                "JetBrainsMono Nerd Font 1";
+    expand:              false;
 }
