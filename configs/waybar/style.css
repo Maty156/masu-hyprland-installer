@@ -1,3 +1,5 @@
+@import "colors.css";
+
 /* =========================================================
    MASU Waybar — Glassmorphism
    Frosted glass bar with soft glows and clean module pills
@@ -194,4 +196,86 @@ window#waybar {
     font-size: 16px;
     padding: 0 10px;
     color: #1793d1;
+}
+
+/* Pywal dynamic colors */
+#workspaces button.active {
+    color: @sky;
+    background: rgba(255, 255, 255, 0.10);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.10);
+}
+
+#mpris {
+    color: @green;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#network {
+    color: @sky;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#pulseaudio {
+    color: @sapphire;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#cpu {
+    color: @yellow;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#memory {
+    color: @green;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#custom-arch {
+    color: @sky;
+}
+
+/* Pywal dynamic colors */
+#workspaces button.active {
+    color: @sky;
+    background: rgba(255, 255, 255, 0.10);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.10);
+}
+
+#mpris {
+    color: @green;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#network {
+    color: @sky;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#pulseaudio {
+    color: @sapphire;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#cpu {
+    color: @yellow;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#memory {
+    color: @green;
+    border-color: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#custom-arch {
+    color: @sky;
 }
