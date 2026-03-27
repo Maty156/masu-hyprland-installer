@@ -23,7 +23,7 @@
 
 | Fastfetch | Wallpaper Picker |
 |-----------|-----------------|
-| ![Fastfetch](assets/preview-fastfetch.png) | ![Picker](assets/preview-picker.png) |
+| ![Fastfetch](assets/preview-fastfetch.png) | ![Picker](assets/preview-pick.png) |
 
 ---
 
