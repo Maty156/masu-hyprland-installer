@@ -1,4 +1,4 @@
-# MASU Hyprland Installer v2.0
+# MASU Hyprland Installer v2.3
 
 ```
 ███╗   ███╗ █████╗ ███████╗██╗   ██╗
@@ -9,7 +9,7 @@
 ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝
 ```
 
-> A full Hyprland desktop rice installer with a **Glassmorphism UI** and **Pywal dynamic color pipeline** — your entire desktop theme follows your wallpaper automatically.
+> A full Hyprland desktop rice installer with **Glassmorphism UI** and **Pywal dynamic color pipeline** — your entire desktop theme follows your wallpaper automatically.
 
 **by [Matyas Abraham (Maty156)](https://github.com/Maty156)**
 
@@ -23,21 +23,26 @@
 
 | Fastfetch | Wallpaper Picker |
 |-----------|-----------------|
-| ![Fastfetch](assets/preview-fastfetch.png) | ![Picker](assets/preview-picker.png) |
+| ![Fastfetch](assets/preview-fastfetch.png) | ![Picker](assets/preview-pick.png) |
 
 ---
 
-## What's in v2.0
+## What's in v2.3
 
-- **Glassmorphism Waybar** — frosted glass bar with colored module pills (CPU, RAM, battery, network, volume, media)
-- **Pywal color pipeline** — change wallpaper and your entire desktop theme updates automatically (waybar, wofi, dunst, hyprland borders, hyprlock)
-- **Rofi wallpaper picker** — thumbnail grid, open with `SUPER+W`
-- **Wofi launcher** — dynamic colors matching your current wallpaper
-- **Hyprlock** — lock screen always syncs with your current wallpaper
-- **Smooth animations** — fluid window animations with custom bezier curves
-- **Wallpaper persistence** — your last wallpaper restores on every reboot
+- **Glassmorphism Waybar** — frosted glass bar with pywal dynamic colored module pills
+- **Matuwall panel picker** — slide-in wallpaper picker from the left edge (`SUPER+W`)
+- **Full pywal pipeline** — change wallpaper and everything updates automatically:
+  - Waybar colors, Wofi launcher, Dunst notifications
+  - Hyprland window borders, Hyprlock wallpaper
+  - SDDM login screen wallpaper + colors, wob OSD
+  - Terminal colors (cmatrix, cava, etc.)
+- **awww wallpaper daemon** — smooth transitions, animated gif support
+- **Hyprlock** — lock screen always syncs with current wallpaper
+- **SDDM** — login screen matches your wallpaper and pywal colors
+- **Smooth animations** — fluid window animations with bezier curves
+- **Wallpaper persistence** — last wallpaper restores on every reboot
 - **Volume & brightness OSD** — wob overlay bar for media keys
-- **wob OSD** — clean volume/brightness overlay
+- **Spotify scratchpad** — `SUPER+Z` toggles Spotify in/out
 
 ---
 
@@ -49,45 +54,45 @@
 | `hyprlock` | Lock screen |
 | `waybar` | Status bar |
 | `wofi` | App launcher |
-| `rofi-wayland` | Wallpaper picker |
-| `swww` | Wallpaper daemon |
+| `awww` | Wallpaper daemon |
+| `matuwall` | GTK4 wallpaper picker panel |
 | `dunst` | Notifications |
 | `kitty` | Terminal |
 | `python-pywal` | Dynamic color scheme generator |
 | `wob` | Volume/brightness OSD |
-| `imagemagick` | Thumbnail generation |
-| `jq` | JSON parsing for monitor detection |
-| `bc` | Math for icon size calculation |
+| `rofi-wayland` | Application launcher |
 | `grim` + `slurp` | Screenshots |
 | `brightnessctl` | Brightness control |
 | `playerctl` | Media control |
 | `thunar` | File manager |
 | `pavucontrol` | Audio control |
 | `ttf-jetbrains-mono-nerd` | Font |
+| `gtk4` + `libadwaita` + `gtk-layer-shell` | Matuwall dependencies |
+| `jq` | JSON parsing |
+| `imagemagick` | Image processing |
 
 ---
 
 ## Installation
 
 ```bash
-# Clone the repo
 git clone https://github.com/Maty156/masu-hyprland-installer.git
 cd masu-hyprland-installer
-
-# Run the installer
 bash install.sh
 ```
 
 The installer will:
 1. Detect your distro and install all dependencies
 2. Back up your existing configs
-3. Install all MASU configs
-4. Run pywal on the default wallpaper to generate initial colors
-5. Enable SDDM and NetworkManager
+3. Install all MASU configs and scripts
+4. Clone and install Matuwall
+5. Set up the awww wrapper for pywal integration
+6. Run pywal on the default wallpaper
+7. Configure SDDM and enable services
 
 > Supports: **Arch**, **Manjaro**, **Ubuntu**, **Debian**, **Fedora**, **openSUSE**
 
-After install, reboot and select Hyprland from your login screen.
+After install, add your wallpapers to `~/wallpapers/` and reboot!
 
 ---
 
@@ -95,13 +100,15 @@ After install, reboot and select Hyprland from your login screen.
 
 | Key | Action |
 |-----|--------|
-| `SUPER + Q` | Open terminal (kitty) |
+| `SUPER + Q` | Terminal (kitty) |
 | `SUPER + R` / `SUPER + SPACE` | App launcher (wofi) |
-| `SUPER + W` | Wallpaper picker |
+| `SUPER + W` | Wallpaper picker (matuwall panel) |
+| `SUPER + Z` | Spotify scratchpad toggle |
 | `SUPER + E` | File manager (thunar) |
 | `SUPER + C` | Close window |
 | `SUPER + F` | Fullscreen |
 | `SUPER + V` | Toggle floating |
+| `SUPER + SHIFT + V` | Float + center + resize to 900×600 |
 | `SUPER + L` | Lock screen |
 | `SUPER + Delete` | Sleep |
 | `SUPER + SHIFT + Delete` | Lock + sleep |
@@ -114,31 +121,42 @@ After install, reboot and select Hyprland from your login screen.
 | `SUPER + ALT + arrows` | Resize window |
 | `Print` | Screenshot (fullscreen) |
 | `SUPER + Print` | Screenshot (area select) |
-| `XF86AudioRaiseVolume` | Volume up |
-| `XF86AudioLowerVolume` | Volume down |
-| `XF86AudioMute` | Mute |
-| `XF86MonBrightnessUp` | Brightness up |
-| `XF86MonBrightnessDown` | Brightness down |
+| `XF86AudioRaiseVolume` | Volume up + OSD |
+| `XF86AudioLowerVolume` | Volume down + OSD |
+| `XF86AudioMute` | Mute + OSD |
+| `XF86MonBrightnessUp` | Brightness up + OSD |
+| `XF86MonBrightnessDown` | Brightness down + OSD |
 
 ---
 
 ## Pywal Color Pipeline
 
-When you change wallpaper with `SUPER+W`, the following update automatically:
+When you pick a wallpaper with `SUPER+W`, the following update automatically:
 
 ```
-Wallpaper selected
-      │
-      ▼
-   pywal runs
-      │
-      ├──▶ Waybar colors
-      ├──▶ Wofi launcher colors
-      ├──▶ Dunst notification colors
-      ├──▶ Hyprland border color
-      ├──▶ Hyprlock wallpaper
-      └──▶ Wob OSD colors
+Wallpaper selected (matuwall)
+        │
+        ▼
+   awww sets wallpaper
+        │
+        ▼
+   pywal generates colors
+        │
+        ├──▶ Waybar module colors
+        ├──▶ Wofi launcher colors
+        ├──▶ Dunst notification colors
+        ├──▶ Hyprland border color
+        ├──▶ Hyprlock wallpaper
+        ├──▶ SDDM login screen wallpaper + colors
+        ├──▶ wob OSD colors
+        └──▶ Terminal colors (cmatrix, cava, etc.)
 ```
+
+---
+
+## Adding Wallpapers
+
+Drop any `.jpg`, `.png`, `.webp` images into `~/wallpapers/` then press `SUPER+W` to open the picker. The panel slides in from the left — click a thumbnail to apply instantly.
 
 ---
 
@@ -148,56 +166,45 @@ Wallpaper selected
 masu-hyprland-installer/
 ├── install.sh
 ├── wallpapers/
-│   └── wallpaper.jpg          # Default wallpaper
+│   └── wallpaper.jpg
 └── configs/
     ├── hypr/
-    │   ├── hyprland.conf       # Main config
-    │   ├── animations.conf     # Animations & decorations
-    │   ├── hyprland-colors.conf # Border colors (pywal generated)
-    │   ├── hyprlock.conf       # Lock screen
+    │   ├── hyprland.conf
+    │   ├── animations.conf
+    │   ├── hyprland-colors.conf
+    │   ├── hyprlock.conf
     │   └── scripts/
-    │       ├── wallpaper.sh        # Wallpaper + pywal pipeline
-    │       ├── wall-picker.sh      # Rofi thumbnail picker
-    │       ├── restore-wallpaper.sh # Startup restore
-    │       ├── hyprlock_wall.sh    # Hyprlock sync
-    │       ├── volume-up.sh
-    │       ├── volume-down.sh
-    │       └── volume-mute.sh
-    ├── waybar/
-    │   ├── config              # Modules config
-    │   └── style.css           # Glassmorphism style
-    ├── wofi/
-    │   ├── config
-    │   └── style.css           # Dynamic pywal colors
-    ├── rofi/
-    │   ├── selector2.rasi      # Wallpaper picker theme
-    │   ├── theme.rasi          # Base theme
-    │   └── config.rasi
-    ├── dunst/
-    │   └── dunstrc
-    ├── wob/
-    │   └── wob.ini             # OSD config
-    ├── fastfetch/
-    │   └── config.jsonc
-    └── wal/
-        └── templates/
-            ├── hyprland-colors.conf  # Border color template
-            └── colors-wofi.css       # Wofi color template
+    │       ├── wallpaper-colors.sh   # pywal pipeline
+    │       ├── wal-watcher.sh        # awww change detector
+    │       ├── restore-wallpaper.sh  # startup restore
+    │       ├── matuwall-toggle.sh    # SUPER+W toggle
+    │       ├── hyprlock_wall.sh      # hyprlock sync
+    │       ├── sddm-colors.sh        # SDDM color sync
+    │       ├── spotify-toggle.sh     # scratchpad toggle
+    │       ├── volume-up/down/mute.sh
+    │       └── brightness-up/down.sh
+    ├── waybar/config + style.css
+    ├── wofi/config + style.css
+    ├── rofi/selector2.rasi + theme.rasi
+    ├── dunst/dunstrc
+    ├── wob/wob.ini
+    ├── matuwall/config.json
+    ├── fastfetch/config.jsonc
+    └── wal/templates/
+        ├── hyprland-colors.conf
+        ├── colors-wofi.css
+        ├── dunstrc
+        └── wob.ini
 ```
-
----
-
-## Adding Wallpapers
-
-Drop any `.jpg`, `.png`, `.webp` images into `~/wallpapers/` and press `SUPER+W` to open the picker. Thumbnails are generated automatically on first launch.
 
 ---
 
 ## Credits
 
-- Wallpaper picker adapted from [JaKooLit/Hyprland-Dots](https://github.com/JaKooLit/Hyprland-Dots)
-- Color pipeline powered by [pywal](https://github.com/eylles/pywal16)
-- Wallpaper daemon by [swww](https://github.com/LGFae/swww)
+- Wallpaper picker by [Matuwall](https://github.com/naurissteins/Matuwall)
+- Color pipeline powered by [pywal16](https://github.com/eylles/pywal16)
+- Wallpaper daemon by [awww](https://codeberg.org/LGFae/awww)
+- Installer structure inspired by [JaKooLit/Hyprland-Dots](https://github.com/JaKooLit/Hyprland-Dots)
 
 ---
 
