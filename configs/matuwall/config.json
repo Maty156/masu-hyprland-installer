@@ -1,6 +1,6 @@
 {
     "main": {
-        "wallpaper_dir": "/home/matyas/wallpapers",
+        "wallpaper_dir": "~/wallpapers",
         "thumbnail_size": 300,
         "mouse_enabled": true,
         "keep_ui_alive": true
