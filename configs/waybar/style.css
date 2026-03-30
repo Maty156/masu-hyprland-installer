@@ -5,7 +5,7 @@
    Frosted glass bar with soft glows and clean module pills
    ========================================================= */
 
-@import "/home/matyas/.cache/wal/colors-waybar.css";
+@import "colors.css";
 
 * {
     font-family: "JetBrainsMono Nerd Font", monospace;
