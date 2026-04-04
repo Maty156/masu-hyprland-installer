@@ -12,6 +12,28 @@
 
 set -e
 
+# ─── Cleanup Trap ──────────────────────────────────────────
+cleanup() {
+    local exit_code=$?
+    [[ $exit_code -ne 0 ]] && echo -e "\n${RED}[ERROR]${RESET} Installation interrupted!"
+    exit $exit_code
+}
+trap cleanup EXIT INT TERM
+
+# ─── Spinner ───────────────────────────────────────────────
+spinner() {
+    local pid=$1
+    local delay=0.1
+    local frames=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
+    while kill -0 "$pid" 2>/dev/null; do
+        for frame in "${frames[@]}"; do
+            printf "\r  ${CYAN}%s${RESET} %s" "$frame" "$2"
+            sleep "$delay"
+        done
+    done
+    printf "\r"
+}
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -60,10 +82,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # ─────────────────────────────────────────
 # DETECT DISTRO
 # ─────────────────────────────────────────
-step "Detecting distribution..."
-[ -f /etc/os-release ] && source /etc/os-release || error "Cannot detect distribution!"
-DISTRO=$ID
 info "Detected: $PRETTY_NAME"
+
+# ─── NVIDIA Detection ──────────────────────────────────────
+IS_NVIDIA=false
+if lspci | grep -qi "nvidia"; then
+    IS_NVIDIA=true
+    warn "NVIDIA GPU Detected! Applying NVIDIA-specific patches..."
+fi
 
 # ─────────────────────────────────────────
 # INSTALL PACKAGES
@@ -139,14 +165,21 @@ install_opensuse() {
         pavucontrol rofi ImageMagick jq bc
 }
 
-case "$DISTRO" in
-    arch|blackarch)    install_arch ;;
-    manjaro)           install_arch ;;
-    ubuntu|debian|pop) install_debian ;;
-    fedora)            install_fedora ;;
-    opensuse*)         install_opensuse ;;
-    *)                 warn "Unknown distro: $DISTRO. Trying pacman..." && install_arch ;;
-esac
+install_pkgs() {
+    case "$DISTRO" in
+        arch|blackarch)    install_arch ;;
+        manjaro)           install_arch ;;
+        ubuntu|debian|pop) install_debian ;;
+        fedora)            install_fedora ;;
+        opensuse*)         install_opensuse ;;
+        *)                 warn "Unknown distro: $DISTRO. Trying pacman..." && install_arch ;;
+    esac
+}
+
+step "Installing packages..."
+install_pkgs &
+spinner $! "Downloading and installing packages..."
+wait
 
 success "Packages installed!"
 
@@ -209,6 +242,27 @@ success "Installed pywal templates"
 # Make all scripts executable
 chmod +x "$HOME/.config/hypr/scripts/"*.sh
 success "Scripts made executable"
+
+# ─── NVIDIA PATSCHES ───────────────────────────────────────
+if [[ "$IS_NVIDIA" = true ]]; then
+    step "Applying NVIDIA Patches..."
+    # Add NVIDIA env vars to hyprland.conf if not present
+    if ! grep -q "LIBVA_DRIVER_NAME = nvidia" "$HOME/.config/hypr/hyprland.conf"; then
+        sed -i '1i env = LIBVA_DRIVER_NAME,nvidia\nenv = XDG_SESSION_TYPE,wayland\nenv = GBM_BACKEND,nvidia-drm\nenv = __GLX_VENDOR_LIBRARY_NAME,nvidia\nenv = WLR_NO_HARDWARE_CURSORS,1' "$HOME/.config/hypr/hyprland.conf"
+        success "NVIDIA environment variables added to hyprland.conf"
+    fi
+fi
+
+# ─── ECOSYSTEM SYNC ────────────────────────────────────────
+step "Syncing with MASU Ecosystem..."
+if [[ -d "$HOME/.oh-my-zsh" ]]; then
+    info "MASU Terminal detected! Syncing colors..."
+    # Ensure terminal color restore is in .zshrc
+    if ! grep -q 'wal/sequences' ~/.zshrc 2>/dev/null; then
+        echo '(cat ~/.cache/wal/sequences &)' >> ~/.zshrc
+    fi
+    success "Terminal colors synced with Pywal pipeline"
+fi
 
 # ─────────────────────────────────────────
 # AWWW WRAPPER

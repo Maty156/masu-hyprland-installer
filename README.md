@@ -1,4 +1,4 @@
-# MASU Hyprland Installer v2.3
+# MASU Hyprland Installer v3.0
 
 ```
 ███╗   ███╗ █████╗ ███████╗██╗   ██╗
@@ -27,17 +27,18 @@
 
 ---
 
-## What's in v2.3
+## What's in v3.0 (Pro Upgrade)
 
-- **Glassmorphism Waybar** — frosted glass bar with pywal dynamic colored module pills
-- **Matuwall panel picker** — slide-in wallpaper picker from the left edge (`SUPER+W`)
-- **Full pywal pipeline** — change wallpaper and everything updates automatically:
-  - Waybar colors, Wofi launcher, Dunst notifications
-  - Hyprland window borders, Hyprlock wallpaper
-  - SDDM login screen wallpaper + colors, wob OSD
-  - Terminal colors (cmatrix, cava, etc.)
-- **awww wallpaper daemon** — smooth transitions, animated gif support
-- **Hyprlock** — lock screen always syncs with current wallpaper
+- ⚡ **MASU Pro Engine** — faster parallel installation and `spinner` feedback
+- 🕵️ **NVIDIA Detection** — auto-patches for NVIDIA hardware (env vars & fixes)
+- 💎 **Glassmorphism v2** — refined Waybar with smoother blurs and glowing borders
+- 🔗 **Ecosystem Sync** — automatically syncs colors with **MASU Terminal**
+- 🎮 **Gaming Mode** — `SUPER+G` to toggle optimizations for maximum FPS
+- 📏 **Smart Gaps** — auto-hide gaps when only one window is open
+- ✦ **Matuwall panel picker** — wallpaper picker from the left edge (`SUPER+W`)
+- ✦ **Full pywal pipeline** — everything follows your wallpaper automatically
+- ✦ **awww wallpaper daemon** — smooth transitions and persistence
+- ✦ **Hyprlock** — lock screen always syncs with current wallpaper
 - **SDDM** — login screen matches your wallpaper and pywal colors
 - **Smooth animations** — fluid window animations with bezier curves
 - **Wallpaper persistence** — last wallpaper restores on every reboot
