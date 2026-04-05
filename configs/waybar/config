@@ -78,6 +78,7 @@
         "tooltip-format": "{title} \u2014 {artist}\n{album}"
     },
     "network": {
+        "interface": "wlan0",
         "format-wifi": "\udb82\udd28  {essid}",
         "format-ethernet": "\udb80\ude00  {ipaddr}",
         "format-disconnected": "\udb82\udd2d  offline",
