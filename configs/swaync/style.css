@@ -1,0 +1,106 @@
+@import url("file:///home/matyas/.cache/wal/colors-waybar.css");
+
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+}
+
+.control-center {
+    background: rgba(10, 10, 20, 0.88);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px;
+}
+
+/* Title bar with power buttons */
+.widget-title {
+    color: @text;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 4px 8px;
+}
+
+.widget-title > button {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: @text;
+    padding: 4px 8px;
+    font-size: 14px;
+    min-width: 28px;
+    min-height: 28px;
+}
+
+.widget-title > button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: @sky;
+}
+
+/* Quick toggle buttons - 2x2 grid */
+.buttons-grid > flowbox > flowboxchild > button {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: @text;
+    padding: 14px 8px;
+    margin: 3px;
+    min-width: 155px;
+    min-height: 55px;
+    font-size: 13px;
+}
+
+.buttons-grid > flowbox > flowboxchild > button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: @sky;
+}
+
+.buttons-grid > flowbox > flowboxchild > button.active {
+    background: @sky;
+    color: @base;
+    border-color: @sky;
+}
+
+.notification-row {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    margin: 4px 0;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.notification-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.notification-row .notification-background .notification .notification-content .summary {
+    font-weight: bold;
+    color: @text;
+}
+
+.notification-row .notification-background .notification .notification-content .body {
+    color: @subtext;
+}
+
+.widget-mpris {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 8px;
+    margin: 4px 0;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.widget-mpris .widget-mpris-title {
+    font-weight: bold;
+    font-size: 14px;
+    color: @text;
+}
+
+.widget-mpris .widget-mpris-subtitle {
+    color: @subtext;
+}
+
+scrollbar slider {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    min-width: 4px;
+}
