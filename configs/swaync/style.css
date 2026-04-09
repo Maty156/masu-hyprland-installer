@@ -2,105 +2,149 @@
 
 * {
     font-family: "JetBrainsMono Nerd Font";
-    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+notificationwindow, blankwindow {
+    background: transparent;
 }
 
 .control-center {
-    background: rgba(10, 10, 20, 0.88);
+    background: rgba(8, 8, 18, 0.88);
     border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
 
-/* Title bar with power buttons */
+/* Title */
 .widget-title {
     color: @text;
     font-size: 14px;
     font-weight: bold;
-    padding: 4px 8px;
+    padding: 6px 8px;
+    margin: 0 3px;
 }
 
 .widget-title > button {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
-    color: @text;
-    padding: 4px 8px;
-    font-size: 14px;
-    min-width: 28px;
-    min-height: 28px;
+    color: @subtext;
+    padding: 3px 10px;
+    font-size: 12px;
 }
 
 .widget-title > button:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: @sky;
-}
-
-/* Quick toggle buttons - 2x2 grid */
-.buttons-grid > flowbox > flowboxchild > button {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    color: @text;
-    padding: 14px 8px;
-    margin: 3px;
-    min-width: 155px;
-    min-height: 55px;
-    font-size: 13px;
-}
-
-.buttons-grid > flowbox > flowboxchild > button:hover {
     background: rgba(255, 255, 255, 0.12);
-    color: @sky;
+    color: @text;
 }
 
-.buttons-grid > flowbox > flowboxchild > button.active {
+/* Notifications */
+.notification-row {
+    background: none;
+    outline: none;
+    margin: 3px 6px;
+}
+
+.notification-row .notification-background .notification {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 10px 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.notification-row:hover .notification-background .notification {
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.notification image {
+    border-radius: 10px;
+    margin-right: 8px;
+    min-width: 36px;
+    min-height: 36px;
+}
+
+.summary {
+    font-size: 13px;
+    font-weight: 600;
+    color: @text;
+}
+
+.body {
+    font-size: 11px;
+    color: @subtext;
+}
+
+.close-button {
+    background: transparent;
+    border-radius: 50%;
+    margin-top: 4px;
+    margin-right: 4px;
+    min-width: 20px;
+    min-height: 20px;
+    color: @subtext;
+}
+
+.close-button:hover {
+    background: rgba(220, 80, 80, 0.4);
+    color: white;
+}
+
+/* mpris */
+.widget-mpris {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    margin: 4px 6px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.widget-mpris .widget-mpris-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: @text;
+}
+
+.widget-mpris .widget-mpris-subtitle {
+    font-size: 11px;
+    color: @subtext;
+}
+
+/* Bottom buttons - small icons */
+.widget-buttons-grid {
+    margin: 6px;
+    padding: 4px;
+}
+
+.widget-buttons-grid button {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 18px;
+    color: @sky;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.widget-buttons-grid button:hover {
     background: @sky;
     color: @base;
     border-color: @sky;
 }
 
-.notification-row {
-    background: rgba(255, 255, 255, 0.04);
-    border-radius: 12px;
-    margin: 4px 0;
-    padding: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.notification-row:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.notification-row .notification-background .notification .notification-content .summary {
-    font-weight: bold;
-    color: @text;
-}
-
-.notification-row .notification-background .notification .notification-content .body {
-    color: @subtext;
-}
-
-.widget-mpris {
-    background: rgba(255, 255, 255, 0.04);
-    border-radius: 12px;
-    padding: 8px;
-    margin: 4px 0;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.widget-mpris .widget-mpris-title {
-    font-weight: bold;
-    font-size: 14px;
-    color: @text;
-}
-
-.widget-mpris .widget-mpris-subtitle {
-    color: @subtext;
+.widget-buttons-grid button:checked {
+    background: @sky;
+    color: @base;
 }
 
 scrollbar slider {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 4px;
-    min-width: 4px;
+    min-width: 3px;
+}
+
+*:focus {
+    outline: none;
+    box-shadow: none;
 }
