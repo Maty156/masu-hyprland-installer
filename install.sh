@@ -16,6 +16,8 @@ set -e
 cleanup() {
     local exit_code=$?
     [[ $exit_code -ne 0 ]] && echo -e "\n${RED}[ERROR]${RESET} Installation interrupted!"
+    # Clean up temp config clone if it exists
+    [[ -d "$CONFIG_TMP" ]] && rm -rf "$CONFIG_TMP"
     exit $exit_code
 }
 trap cleanup EXIT INT TERM
@@ -47,6 +49,10 @@ success() { echo -e "${GREEN}[OK]${RESET} $1"; }
 warn()    { echo -e "${YELLOW}[WARN]${RESET} $1"; }
 error()   { echo -e "${RED}[ERROR]${RESET} $1"; exit 1; }
 step()    { echo -e "\n${BOLD}${BLUE}==>${RESET}${BOLD} $1${RESET}"; }
+
+# ─── Config Repo ───────────────────────────────────────────
+CONFIG_REPO="https://github.com/Maty156/.config.git"
+CONFIG_TMP="/tmp/masu-config-$$"
 
 clear
 echo -e "${CYAN}"
@@ -191,7 +197,7 @@ step "Backing up existing configs..."
 BACKUP_DIR="$HOME/.config/masu-backup-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
-for dir in hypr waybar wofi dunst rofi fastfetch wob matuwall; do
+for dir in hypr waybar wofi dunst rofi fastfetch wob matuwall wal; do
     [ -d "$HOME/.config/$dir" ] && cp -r "$HOME/.config/$dir" "$BACKUP_DIR/" && info "Backed up $dir"
 done
 
@@ -206,12 +212,20 @@ mkdir -p "$HOME/wallpapers"
 mkdir -p "$HOME/Pictures"
 mkdir -p "$HOME/.cache/wallpaper-thumbs"
 
-if [ -f "$SCRIPT_DIR/wallpapers/wallpaper.jpg" ]; then
-    cp "$SCRIPT_DIR/wallpapers/wallpaper.jpg" "$HOME/wallpapers/wallpaper.jpg"
-    success "Default wallpaper copied!"
-else
-    warn "No wallpaper found. Add images to ~/wallpapers/"
+# ─────────────────────────────────────────
+# CLONE CONFIG REPO
+# ─────────────────────────────────────────
+step "Fetching configs from Maty156/.config..."
+
+if ! command -v git &>/dev/null; then
+    error "git is required but not installed."
 fi
+
+info "Cloning $CONFIG_REPO..."
+git clone --depth=1 "$CONFIG_REPO" "$CONFIG_TMP" &
+spinner $! "Cloning config repo..."
+wait
+success "Config repo cloned!"
 
 # ─────────────────────────────────────────
 # INSTALL CONFIGS
@@ -220,9 +234,13 @@ step "Installing configs..."
 
 install_config() {
     local dir=$1
-    mkdir -p "$HOME/.config/$dir"
-    cp -r "$SCRIPT_DIR/configs/$dir/." "$HOME/.config/$dir/"
-    success "Installed $dir"
+    if [ -d "$CONFIG_TMP/$dir" ]; then
+        mkdir -p "$HOME/.config/$dir"
+        cp -r "$CONFIG_TMP/$dir/." "$HOME/.config/$dir/"
+        success "Installed $dir"
+    else
+        warn "Config not found in repo: $dir — skipping"
+    fi
 }
 
 install_config "hypr"
@@ -235,18 +253,34 @@ install_config "wob"
 install_config "matuwall"
 
 # Install pywal templates
-mkdir -p "$HOME/.config/wal/templates"
-cp -r "$SCRIPT_DIR/configs/wal/templates/." "$HOME/.config/wal/templates/"
-success "Installed pywal templates"
+if [ -d "$CONFIG_TMP/wal/templates" ]; then
+    mkdir -p "$HOME/.config/wal/templates"
+    cp -r "$CONFIG_TMP/wal/templates/." "$HOME/.config/wal/templates/"
+    success "Installed pywal templates"
+else
+    warn "No pywal templates found in repo — skipping"
+fi
+
+# Copy default wallpaper if present in config repo
+if [ -f "$CONFIG_TMP/wallpapers/wallpaper.jpg" ]; then
+    cp "$CONFIG_TMP/wallpapers/wallpaper.jpg" "$HOME/wallpapers/wallpaper.jpg"
+    success "Default wallpaper copied!"
+else
+    warn "No default wallpaper in config repo. Add images to ~/wallpapers/"
+fi
 
 # Make all scripts executable
-chmod +x "$HOME/.config/hypr/scripts/"*.sh
-success "Scripts made executable"
+[ -d "$HOME/.config/hypr/scripts" ] && \
+    chmod +x "$HOME/.config/hypr/scripts/"*.sh && \
+    success "Scripts made executable"
 
-# ─── NVIDIA PATSCHES ───────────────────────────────────────
+# Cleanup temp clone
+rm -rf "$CONFIG_TMP"
+success "Config repo cleaned up"
+
+# ─── NVIDIA PATCHES ────────────────────────────────────────
 if [[ "$IS_NVIDIA" = true ]]; then
     step "Applying NVIDIA Patches..."
-    # Add NVIDIA env vars to hyprland.conf if not present
     if ! grep -q "LIBVA_DRIVER_NAME = nvidia" "$HOME/.config/hypr/hyprland.conf"; then
         sed -i '1i env = LIBVA_DRIVER_NAME,nvidia\nenv = XDG_SESSION_TYPE,wayland\nenv = GBM_BACKEND,nvidia-drm\nenv = __GLX_VENDOR_LIBRARY_NAME,nvidia\nenv = WLR_NO_HARDWARE_CURSORS,1' "$HOME/.config/hypr/hyprland.conf"
         success "NVIDIA environment variables added to hyprland.conf"
@@ -257,7 +291,6 @@ fi
 step "Syncing with MASU Ecosystem..."
 if [[ -d "$HOME/.oh-my-zsh" ]]; then
     info "MASU Terminal detected! Syncing colors..."
-    # Ensure terminal color restore is in .zshrc
     if ! grep -q 'wal/sequences' ~/.zshrc 2>/dev/null; then
         echo '(cat ~/.cache/wal/sequences &)' >> ~/.zshrc
     fi
@@ -312,13 +345,15 @@ if command -v wal &>/dev/null; then
     INITIAL_WALL="$HOME/wallpapers/wallpaper.jpg"
     if [ -f "$INITIAL_WALL" ]; then
         wal -i "$INITIAL_WALL" -n -q
-        [ -f ~/.cache/wal/colors-waybar.css ]    && cp ~/.cache/wal/colors-waybar.css ~/.config/waybar/colors.css
-        [ -f ~/.cache/wal/colors-wofi.css ]      && cp ~/.cache/wal/colors-wofi.css   ~/.config/wofi/style.css
-        [ -f ~/.cache/wal/wob.ini ]              && cp ~/.cache/wal/wob.ini            ~/.config/wob/wob.ini
-        [ -f ~/.cache/wal/dunstrc ]              && cp ~/.cache/wal/dunstrc             ~/.config/dunst/dunstrc
-        [ -f ~/.cache/wal/hyprland-colors.conf ] && cp ~/.cache/wal/hyprland-colors.conf ~/.config/hypr/hyprland-colors.conf
+        [ -f ~/.cache/wal/colors-waybar.css ]     && cp ~/.cache/wal/colors-waybar.css    ~/.config/waybar/colors.css
+        [ -f ~/.cache/wal/colors-wofi.css ]       && cp ~/.cache/wal/colors-wofi.css      ~/.config/wofi/style.css
+        [ -f ~/.cache/wal/wob.ini ]               && cp ~/.cache/wal/wob.ini              ~/.config/wob/wob.ini
+        [ -f ~/.cache/wal/dunstrc ]               && cp ~/.cache/wal/dunstrc              ~/.config/dunst/dunstrc
+        [ -f ~/.cache/wal/hyprland-colors.conf ]  && cp ~/.cache/wal/hyprland-colors.conf ~/.config/hypr/hyprland-colors.conf
         sed -i "s|^    path = .*|    path = $INITIAL_WALL|" ~/.config/hypr/hyprlock.conf
         success "Colors generated!"
+    else
+        warn "No default wallpaper found — skipping pywal run. Add one to ~/wallpapers/ and run wal manually."
     fi
 else
     warn "pywal not found — run: pip install pywal"
