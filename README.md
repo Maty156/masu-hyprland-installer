@@ -22,7 +22,7 @@
 
 | Desktop | Wofi Launcher |
 |---------|--------------|
-| ![Desktop](assets/desktop.png) | ![Wofi](assets/preview-wofi.png) |
+| ![Desktop](assets/desktop.png) | ![Wofi](assets/wofi1.png) |
 
 | Workspace | Wallpaper Picker |
 |-----------|-----------------|
