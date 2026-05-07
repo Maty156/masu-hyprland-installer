@@ -19,7 +19,7 @@
 
 | Desktop | Wofi Launcher |
 |---------|--------------|
-| ![Desktop](desktop.png) | ![Wofi](assets/preview-wofi.png) |
+| ![Desktop](assets/desktop.png) | ![Wofi](assets/preview-wofi.png) |
 
 | Fastfetch | Wallpaper Picker |
 |-----------|-----------------|
