@@ -197,7 +197,7 @@ masu-hyprland-installer/
     │   │   ├── dragon-studio-new-notification-3-398649.mp3
     |   │   └── universfield-new-notification-09-352705.mp3
     |   ├── sound.sh
-    |    ├── style.css
+    |   ├── style.css
     ├── wob/wob.ini
     ├── matuwall/config.json
     ├── fastfetch/config.jsonc
@@ -216,6 +216,7 @@ masu-hyprland-installer/
 - Color pipeline powered by [pywal16](https://github.com/eylles/pywal16)
 - Wallpaper daemon by [awww](https://codeberg.org/LGFae/awww)
 - Installer structure inspired by [JaKooLit/Hyprland-Dots](https://github.com/JaKooLit/Hyprland-Dots)
+- swaync notification 
 
 ---
 
