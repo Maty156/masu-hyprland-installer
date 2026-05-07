@@ -190,7 +190,14 @@ masu-hyprland-installer/
     ├── waybar/config + style.css
     ├── wofi/config + style.css
     ├── rofi/selector2.rasi + theme.rasi
-    ├── dunst/dunstrc
+    ├── swaync
+    │   ├── colors.css
+    │   ├── config.json
+    │   ├── sounds
+    │   │   ├── dragon-studio-new-notification-3-398649.mp3
+    |   │   └── universfield-new-notification-09-352705.mp3
+    |   ├── sound.sh
+    |    ├── style.css
     ├── wob/wob.ini
     ├── matuwall/config.json
     ├── fastfetch/config.jsonc
