@@ -17,13 +17,16 @@
 
 ## Screenshots
 
+# Preview
+![preview](assets/preview.png)
+
 | Desktop | Wofi Launcher |
 |---------|--------------|
 | ![Desktop](assets/desktop.png) | ![Wofi](assets/preview-wofi.png) |
 
-| Fastfetch | Wallpaper Picker |
+| Workspace | Wallpaper Picker |
 |-----------|-----------------|
-| ![Fastfetch](asset/workspace.png) | ![Picker](assets/preview-pick.png) |
+| ![Workspace](assets/workspace.png) | ![Picker](assets/preview-pick.png) |
 
 ---
 
