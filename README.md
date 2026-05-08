@@ -26,7 +26,7 @@
 
 | Workspace | Wallpaper Picker |
 |-----------|-----------------|
-| ![Workspace](assets/workspace.png) | ![Picker](assets/preview-pick.png) |
+| ![Workspace](assets/workspace.png) | ![Picker](assets/picker.png) |
 
 ---
 
