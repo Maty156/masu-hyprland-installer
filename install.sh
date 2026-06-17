@@ -73,9 +73,9 @@ echo -e "  ✦ Glassmorphism Waybar with pywal dynamic colors"
 echo -e "  ✦ Matuwall panel wallpaper picker (SUPER+W)"
 echo -e "  ✦ Full pywal pipeline — everything follows your wallpaper"
 echo -e "  ✦ awww wallpaper daemon with smooth transitions"
-echo -e "  ✦ Wofi launcher with dynamic colors"
+echo -e "  ✦ Rofi launcher with dynamic colors"
 echo -e "  ✦ Hyprlock + SDDM sync with current wallpaper"
-echo -e "  ✦ Volume & brightness OSD with wob"
+echo -e "  ✦ Volume & brightness OSD with SwayOSD"
 echo -e "  ✦ Smooth fluid animations"
 echo -e "  ✦ Wallpaper persistence across reboots\n"
 echo -e "${YELLOW}  This will install a full Hyprland desktop environment.${RESET}\n"
@@ -105,14 +105,14 @@ step "Installing packages..."
 install_arch() {
     info "Using pacman..."
     sudo pacman -S --needed --noconfirm \
-        hyprland hyprlock kitty waybar wofi dunst \
+        hyprland hyprlock kitty waybar dunst \
         grim slurp thunar brightnessctl playerctl \
         network-manager-applet pavucontrol \
-        rofi-wayland imagemagick jq bc \
+        rofi-wayland swaync swayosd imagemagick jq bc \
         ttf-jetbrains-mono-nerd noto-fonts-extra \
         python-pywal wob xdg-desktop-portal-hyprland \
         fastfetch gtk4 libadwaita gtk-layer-shell \
-        python python-pip python-virtualenv python-gobject
+        python python-pip python-virtualenv python-gobject uwsm
 
     if ! command -v yay &>/dev/null; then
         info "Installing yay..."
@@ -144,21 +144,21 @@ install_debian() {
     info "Using apt..."
     sudo apt update
     sudo apt install -y \
-        kitty waybar wofi dunst grim slurp thunar \
+        kitty waybar dunst grim slurp thunar \
         brightnessctl playerctl network-manager-gnome \
         pavucontrol rofi imagemagick jq bc \
         fonts-jetbrains-mono python3-pywal \
         python3 python3-pip python3-venv python3-gi \
-        libgtk-4-dev libadwaita-1-dev
+        libgtk-4-dev libadwaita-1-dev swaync
     warn "Hyprland and awww must be installed manually on Debian/Ubuntu."
 }
 
 install_fedora() {
     info "Using dnf..."
     sudo dnf install -y \
-        hyprland kitty waybar wofi dunst grim slurp thunar \
+        hyprland kitty waybar dunst grim slurp thunar \
         brightnessctl playerctl network-manager-applet \
-        pavucontrol rofi-wayland ImageMagick jq bc \
+        pavucontrol rofi-wayland swaync ImageMagick jq bc \
         jetbrains-mono-fonts python3-pywal \
         gtk4-devel libadwaita-devel
 }
@@ -166,9 +166,9 @@ install_fedora() {
 install_opensuse() {
     info "Using zypper..."
     sudo zypper install -y \
-        hyprland kitty waybar wofi dunst grim slurp thunar \
+        hyprland kitty waybar dunst grim slurp thunar \
         brightnessctl playerctl NetworkManager-applet \
-        pavucontrol rofi ImageMagick jq bc
+        pavucontrol rofi swaync ImageMagick jq bc
 }
 
 install_pkgs() {
@@ -245,9 +245,10 @@ install_config() {
 
 install_config "hypr"
 install_config "waybar"
-install_config "wofi"
-install_config "dunst"
 install_config "rofi"
+install_config "swaync"
+install_config "swayosd"
+install_config "dunst"
 install_config "fastfetch"
 install_config "wob"
 install_config "matuwall"
@@ -345,10 +346,10 @@ if command -v wal &>/dev/null; then
     INITIAL_WALL="$HOME/wallpapers/wallpaper.jpg"
     if [ -f "$INITIAL_WALL" ]; then
         wal -i "$INITIAL_WALL" -n -q
-        [ -f ~/.cache/wal/colors-waybar.css ]     && cp ~/.cache/wal/colors-waybar.css    ~/.config/waybar/colors.css
-        [ -f ~/.cache/wal/colors-wofi.css ]       && cp ~/.cache/wal/colors-wofi.css      ~/.config/wofi/style.css
-        [ -f ~/.cache/wal/wob.ini ]               && cp ~/.cache/wal/wob.ini              ~/.config/wob/wob.ini
-        [ -f ~/.cache/wal/dunstrc ]               && cp ~/.cache/wal/dunstrc              ~/.config/dunst/dunstrc
+        [ -f ~/.cache/wal/colors-waybar.css    ] && cp ~/.cache/wal/colors-waybar.css    ~/.config/waybar/colors.css
+        [ -f ~/.cache/wal/colors-rofi.rasi     ] && cp ~/.cache/wal/colors-rofi.rasi     ~/.config/rofi/colors-rofi.rasi
+        [ -f ~/.cache/wal/wob.ini              ] && cp ~/.cache/wal/wob.ini              ~/.config/wob/wob.ini
+        [ -f ~/.cache/wal/dunstrc              ] && cp ~/.cache/wal/dunstrc              ~/.config/dunst/dunstrc
         [ -f ~/.cache/wal/hyprland-colors.conf ]  && cp ~/.cache/wal/hyprland-colors.conf ~/.config/hypr/hyprland-colors.conf
         sed -i "s|^    path = .*|    path = $INITIAL_WALL|" ~/.config/hypr/hyprlock.conf
         success "Colors generated!"
@@ -365,6 +366,15 @@ fi
 step "Setting up SDDM..."
 
 if command -v sddm &>/dev/null; then
+    step "Installing SDDM Theme..."
+    if [ ! -d "/usr/share/sddm/themes/catppuccin" ]; then
+        sudo mkdir -p /usr/share/sddm/themes
+        git clone https://github.com/catppuccin/sddm.git /tmp/sddm-theme
+        sudo cp -r /tmp/sddm-theme/src/catppuccin-macchiato /usr/share/sddm/themes/catppuccin
+        rm -rf /tmp/sddm-theme
+        success "Catppuccin SDDM Theme installed!"
+    fi
+
     sudo mkdir -p /etc/sddm.conf.d
     sudo tee /etc/sddm.conf.d/masu.conf > /dev/null << 'SDDMEOF'
 [Theme]
@@ -409,7 +419,7 @@ echo -e "  ✓ Wallpaper persistence on reboot"
 echo -e "  ✓ Fastfetch\n"
 echo -e "  ${BOLD}Key bindings:${RESET}"
 echo -e "  SUPER+Q          → Terminal (kitty)"
-echo -e "  SUPER+R / SPACE  → App launcher (wofi)"
+echo -e "  SUPER+SPACE      → App launcher (rofi)"
 echo -e "  SUPER+W          → Wallpaper picker (matuwall panel)"
 echo -e "  SUPER+Z          → Spotify scratchpad"
 echo -e "  SUPER+C          → Close window"
