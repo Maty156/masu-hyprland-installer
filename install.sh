@@ -6,7 +6,7 @@
 # ██║ ╚═╝ ██║██║  ██║███████║╚██████╔╝
 # ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝
 #
-# MASU Hyprland Installer v2.3
+# MASU Hyprland Installer v3.0
 # by Matyas Abraham (Maty156)
 # https://github.com/Maty156/masu-hyprland-installer
 
@@ -51,7 +51,7 @@ error()   { echo -e "${RED}[ERROR]${RESET} $1"; exit 1; }
 step()    { echo -e "\n${BOLD}${BLUE}==>${RESET}${BOLD} $1${RESET}"; }
 
 # ─── Config Repo ───────────────────────────────────────────
-CONFIG_REPO="https://github.com/Maty156/.config.git"
+CONFIG_REPO="https://github.com/Maty156/dotfile.git"
 CONFIG_TMP="/tmp/masu-config-$$"
 
 clear
@@ -65,16 +65,16 @@ cat << 'EOF'
 ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝
 EOF
 echo -e "${RESET}"
-echo -e "${BOLD}  MASU Hyprland Installer v2.3${RESET}"
-echo -e "  ${CYAN}Glassmorphism + Pywal Dynamic Theme${RESET}"
+echo -e "${BOLD}  MASU Hyprland Installer v3.0${RESET}"
+echo -e "  ${CYAN}Matugen Dynamic Theme + awww${RESET}"
 echo -e "  by Matyas Abraham\n"
 echo -e "  ${CYAN}Features:${RESET}"
-echo -e "  ✦ Glassmorphism Waybar with pywal dynamic colors"
-echo -e "  ✦ Matuwall panel wallpaper picker (SUPER+W)"
-echo -e "  ✦ Full pywal pipeline — everything follows your wallpaper"
+echo -e "  ✦ Rofi launcher with matugen dynamic colors\n"
+echo -e "  ✦ Rofi-based wallpaper picker with cached backgrounds${RESET}\n"
+echo -e "  ✦ Full matugen pipeline — everything follows your wallpaper"
 echo -e "  ✦ awww wallpaper daemon with smooth transitions"
-echo -e "  ✦ Rofi launcher with dynamic colors"
 echo -e "  ✦ Hyprlock + SDDM sync with current wallpaper"
+echo -e "  ✦ Swaync notifications with matugen colors"
 echo -e "  ✦ Volume & brightness OSD with SwayOSD"
 echo -e "  ✦ Smooth fluid animations"
 echo -e "  ✦ Wallpaper persistence across reboots\n"
@@ -105,14 +105,15 @@ step "Installing packages..."
 install_arch() {
     info "Using pacman..."
     sudo pacman -S --needed --noconfirm \
-        hyprland hyprlock kitty waybar dunst \
+        hyprland hyprlock kitty waybar \
         grim slurp thunar brightnessctl playerctl \
         network-manager-applet pavucontrol \
         rofi-wayland swaync swayosd imagemagick jq bc \
         ttf-jetbrains-mono-nerd noto-fonts-extra \
-        python-pywal wob xdg-desktop-portal-hyprland \
-        fastfetch gtk4 libadwaita gtk-layer-shell \
-        python python-pip python-virtualenv python-gobject uwsm
+        xdg-desktop-portal-hyprland \
+        gtk4 libadwaita gtk-layer-shell \
+        python python-pip python-virtualenv python-gobject uwsm \
+        awww xxhash wl-clipboard cliphist cava htop
 
     if ! command -v yay &>/dev/null; then
         info "Installing yay..."
@@ -122,53 +123,44 @@ install_arch() {
         rm -rf /tmp/yay-install
     fi
 
-    yay -S --needed --noconfirm awww-bin bibata-cursor-theme
-
-    # Install Matuwall
-    if ! command -v matuwall &>/dev/null; then
-        info "Installing Matuwall wallpaper picker..."
-        git clone https://github.com/naurissteins/Matuwall.git ~/Matuwall
-        cd ~/Matuwall
-        /usr/bin/python -m venv --system-site-packages .venv
-        source .venv/bin/activate
-        pip install --upgrade pip
-        pip install .
-        mkdir -p ~/.local/bin
-        ln -sf "$PWD/.venv/bin/matuwall" ~/.local/bin/matuwall
-        cd -
-        success "Matuwall installed!"
-    fi
+    # matugen (AUR binary, avoids needing a Rust toolchain) + bibata cursors + wlogout
+    yay -S --needed --noconfirm matugen-bin bibata-cursor-theme wlogout
 }
 
 install_debian() {
     info "Using apt..."
     sudo apt update
     sudo apt install -y \
-        kitty waybar dunst grim slurp thunar \
+        kitty waybar grim slurp thunar \
         brightnessctl playerctl network-manager-gnome \
         pavucontrol rofi imagemagick jq bc \
-        fonts-jetbrains-mono python3-pywal \
+        fonts-jetbrains-mono \
         python3 python3-pip python3-venv python3-gi \
-        libgtk-4-dev libadwaita-1-dev swaync
-    warn "Hyprland and awww must be installed manually on Debian/Ubuntu."
+        libgtk-4-dev libadwaita-1-dev swaync \
+        xxhash wl-clipboard cliphist cava htop
+    warn "Hyprland, awww, and matugen must be installed manually on Debian/Ubuntu."
 }
 
 install_fedora() {
     info "Using dnf..."
     sudo dnf install -y \
-        hyprland kitty waybar dunst grim slurp thunar \
+        hyprland kitty waybar grim slurp thunar \
         brightnessctl playerctl network-manager-applet \
         pavucontrol rofi-wayland swaync ImageMagick jq bc \
-        jetbrains-mono-fonts python3-pywal \
-        gtk4-devel libadwaita-devel
+        jetbrains-mono-fonts \
+        gtk4-devel libadwaita-devel \
+        xxhash wl-clipboard cliphist cava htop
+    warn "awww and matugen must be installed manually on Fedora."
 }
 
 install_opensuse() {
     info "Using zypper..."
     sudo zypper install -y \
-        hyprland kitty waybar dunst grim slurp thunar \
+        hyprland kitty waybar grim slurp thunar \
         brightnessctl playerctl NetworkManager-applet \
-        pavucontrol rofi swaync ImageMagick jq bc
+        pavucontrol rofi swaync ImageMagick jq bc \
+        xxhash wl-clipboard cliphist cava htop
+    warn "awww and matugen must be installed manually on openSUSE."
 }
 
 install_pkgs() {
@@ -197,7 +189,7 @@ step "Backing up existing configs..."
 BACKUP_DIR="$HOME/.config/masu-backup-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
-for dir in hypr waybar wofi dunst rofi fastfetch wob matuwall wal; do
+for dir in hypr waybar rofi swaync swayosd kitty matugen cava htop wlogout; do
     [ -d "$HOME/.config/$dir" ] && cp -r "$HOME/.config/$dir" "$BACKUP_DIR/" && info "Backed up $dir"
 done
 
@@ -248,19 +240,11 @@ install_config "waybar"
 install_config "rofi"
 install_config "swaync"
 install_config "swayosd"
-install_config "dunst"
-install_config "fastfetch"
-install_config "wob"
-install_config "matuwall"
-
-# Install pywal templates
-if [ -d "$CONFIG_TMP/wal/templates" ]; then
-    mkdir -p "$HOME/.config/wal/templates"
-    cp -r "$CONFIG_TMP/wal/templates/." "$HOME/.config/wal/templates/"
-    success "Installed pywal templates"
-else
-    warn "No pywal templates found in repo — skipping"
-fi
+install_config "kitty"
+install_config "matugen"
+install_config "cava"
+install_config "htop"
+install_config "wlogout"
 
 # Copy default wallpaper if present in config repo
 if [ -f "$CONFIG_TMP/wallpapers/wallpaper.jpg" ]; then
@@ -291,73 +275,26 @@ fi
 # ─── ECOSYSTEM SYNC ────────────────────────────────────────
 step "Syncing with MASU Ecosystem..."
 if [[ -d "$HOME/.oh-my-zsh" ]]; then
-    info "MASU Terminal detected! Syncing colors..."
-    if ! grep -q 'wal/sequences' ~/.zshrc 2>/dev/null; then
-        echo '(cat ~/.cache/wal/sequences &)' >> ~/.zshrc
-    fi
-    success "Terminal colors synced with Pywal pipeline"
+    info "MASU Terminal detected!"
+    success "Terminal ready — kitty colors are refreshed by matugenMagick.sh on each wallpaper change."
 fi
 
 # ─────────────────────────────────────────
-# AWWW WRAPPER
-# ─────────────────────────────────────────
-step "Setting up awww wrapper..."
-
-mkdir -p "$HOME/.local/bin"
-cat > "$HOME/.local/bin/awww" << 'AWWWEOF'
-#!/bin/bash
-# MASU awww wrapper — runs real awww then triggers pywal pipeline
-REAL_AWW=/usr/bin/awww
-WALLPAPER="${@: -1}"
-"$REAL_AWW" "$@"
-[ -f "$WALLPAPER" ] && bash ~/.config/hypr/scripts/wallpaper-colors.sh "$WALLPAPER" &
-AWWWEOF
-chmod +x "$HOME/.local/bin/awww"
-
-# Add ~/.local/bin to PATH if not already there
-if ! grep -q 'local/bin' ~/.zshrc 2>/dev/null; then
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
-fi
-if ! grep -q 'local/bin' ~/.bashrc 2>/dev/null; then
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-fi
-
-# Add pywal terminal color restore
-if ! grep -q 'wal/sequences' ~/.zshrc 2>/dev/null; then
-    echo '(cat ~/.cache/wal/sequences &)' >> ~/.zshrc
-fi
-
-success "awww wrapper installed!"
-
-# ─────────────────────────────────────────
-# SUDOERS FOR SDDM
-# ─────────────────────────────────────────
-step "Setting up SDDM wallpaper sync..."
-
-echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/cp, /usr/bin/sed" | sudo tee /etc/sudoers.d/masu-wallpaper > /dev/null
-success "Sudoers configured for SDDM sync!"
-
-# ─────────────────────────────────────────
-# PYWAL INITIAL RUN
+# INITIAL COLOR SCHEME (matugen)
 # ─────────────────────────────────────────
 step "Generating initial color scheme..."
 
-if command -v wal &>/dev/null; then
-    INITIAL_WALL="$HOME/wallpapers/wallpaper.jpg"
-    if [ -f "$INITIAL_WALL" ]; then
-        wal -i "$INITIAL_WALL" -n -q
-        [ -f ~/.cache/wal/colors-waybar.css    ] && cp ~/.cache/wal/colors-waybar.css    ~/.config/waybar/colors.css
-        [ -f ~/.cache/wal/colors-rofi.rasi     ] && cp ~/.cache/wal/colors-rofi.rasi     ~/.config/rofi/colors-rofi.rasi
-        [ -f ~/.cache/wal/wob.ini              ] && cp ~/.cache/wal/wob.ini              ~/.config/wob/wob.ini
-        [ -f ~/.cache/wal/dunstrc              ] && cp ~/.cache/wal/dunstrc              ~/.config/dunst/dunstrc
-        [ -f ~/.cache/wal/hyprland-colors.conf ]  && cp ~/.cache/wal/hyprland-colors.conf ~/.config/hypr/hyprland-colors.conf
-        sed -i "s|^    path = .*|    path = $INITIAL_WALL|" ~/.config/hypr/hyprlock.conf
-        success "Colors generated!"
-    else
-        warn "No default wallpaper found — skipping pywal run. Add one to ~/wallpapers/ and run wal manually."
-    fi
+INITIAL_WALL="$HOME/wallpapers/wallpaper.jpg"
+if [ -f "$INITIAL_WALL" ] && command -v awww &>/dev/null && command -v matugen &>/dev/null; then
+    awww query &>/dev/null || awww-daemon --format xrgb &
+    sleep 1
+    FOCUSED_MONITOR=$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused) | .name' 2>/dev/null)
+    awww img -o "$FOCUSED_MONITOR" "$INITIAL_WALL" 2>/dev/null || awww img "$INITIAL_WALL"
+    sleep 0.5
+    [ -x "$HOME/.config/hypr/scripts/matugenMagick.sh" ] && "$HOME/.config/hypr/scripts/matugenMagick.sh" --dark
+    success "Colors generated!"
 else
-    warn "pywal not found — run: pip install pywal"
+    warn "No default wallpaper, awww, or matugen found — run wallSelect.sh manually after reboot."
 fi
 
 # ─────────────────────────────────────────
@@ -403,24 +340,22 @@ sudo systemctl enable NetworkManager 2>/dev/null && success "NetworkManager enab
 # DONE
 # ─────────────────────────────────────────
 echo -e "\n${GREEN}${BOLD}╔════════════════════════════════════════════╗${RESET}"
-echo -e "${GREEN}${BOLD}║   MASU Hyprland v2.3 Install Complete! 🎉  ║${RESET}"
+echo -e "${GREEN}${BOLD}║   MASU Hyprland v3.0 Install Complete! 🎉  ║${RESET}"
 echo -e "${GREEN}${BOLD}╚════════════════════════════════════════════╝${RESET}\n"
 echo -e "  ${CYAN}What's installed:${RESET}"
 echo -e "  ✓ Hyprland + smooth animations"
-echo -e "  ✓ Glassmorphism Waybar with pywal colors"
-echo -e "  ✓ Matuwall panel wallpaper picker"
-echo -e "  ✓ Wofi launcher (dynamic colors)"
+echo -e "  ✓ Waybar with matugen dynamic colors"
+echo -e "  ✓ Rofi launcher + wallpaper picker (dynamic colors)"
 echo -e "  ✓ Hyprlock (auto wallpaper sync)"
 echo -e "  ✓ SDDM login screen (auto wallpaper + color sync)"
-echo -e "  ✓ Dunst notifications (pywal colors)"
-echo -e "  ✓ Volume & brightness OSD (wob)"
-echo -e "  ✓ Pywal color pipeline"
-echo -e "  ✓ Wallpaper persistence on reboot"
-echo -e "  ✓ Fastfetch\n"
+echo -e "  ✓ Swaync notifications (matugen colors)"
+echo -e "  ✓ Volume & brightness OSD (SwayOSD)"
+echo -e "  ✓ Matugen color pipeline"
+echo -e "  ✓ Wallpaper persistence on reboot\n"
 echo -e "  ${BOLD}Key bindings:${RESET}"
 echo -e "  SUPER+Q          → Terminal (kitty)"
 echo -e "  SUPER+SPACE      → App launcher (rofi)"
-echo -e "  SUPER+W          → Wallpaper picker (matuwall panel)"
+echo -e "  SUPER+W          → Wallpaper picker (rofi + wallSelect.sh)"
 echo -e "  SUPER+Z          → Spotify scratchpad"
 echo -e "  SUPER+C          → Close window"
 echo -e "  SUPER+F          → Fullscreen"
