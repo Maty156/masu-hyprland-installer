@@ -18,6 +18,8 @@ cleanup() {
     [[ $exit_code -ne 0 ]] && echo -e "\n${RED}[ERROR]${RESET} Installation interrupted!"
     # Clean up temp config clone if it exists
     [[ -d "$CONFIG_TMP" ]] && rm -rf "$CONFIG_TMP"
+    # Stop sudo keep-alive loop if it's still running
+    [[ -n "${SUDO_KEEPALIVE_PID:-}" ]] && kill "$SUDO_KEEPALIVE_PID" 2>/dev/null
     exit $exit_code
 }
 trap cleanup EXIT INT TERM
@@ -88,6 +90,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # ─────────────────────────────────────────
 # DETECT DISTRO
 # ─────────────────────────────────────────
+if [ -f /etc/os-release ]; then
+    # shellcheck disable=SC1091
+    source /etc/os-release
+    DISTRO="$ID"
+    PRETTY_NAME="${PRETTY_NAME:-$DISTRO}"
+else
+    DISTRO="unknown"
+    PRETTY_NAME="Unknown Linux"
+fi
 info "Detected: $PRETTY_NAME"
 
 # ─── NVIDIA Detection ──────────────────────────────────────
@@ -127,18 +138,41 @@ install_arch() {
     yay -S --needed --noconfirm bibata-cursor-theme wlogout
 }
 
+# ─── Rust/cargo fallback for awww + matugen (non-Arch distros) ─────
+# Neither is in Debian/Fedora/openSUSE's official repos yet (Fedora only
+# has an unofficial COPR). Building via cargo works identically everywhere.
+install_awww_matugen_via_cargo() {
+    if ! command -v cargo &>/dev/null; then
+        info "Installing Rust toolchain (needed to build awww + matugen)..."
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y -q
+        # shellcheck disable=SC1090
+        source "$HOME/.cargo/env"
+    fi
+
+    if ! command -v matugen &>/dev/null; then
+        info "Building matugen via cargo (this can take a few minutes)..."
+        cargo install matugen && success "matugen built!" || warn "matugen build failed — install manually: cargo install matugen"
+    fi
+
+    if ! command -v awww &>/dev/null; then
+        info "Building awww via cargo (this can take a few minutes)..."
+        cargo install --git https://codeberg.org/LGFae/awww awww && success "awww built!" || warn "awww build failed — see https://codeberg.org/LGFae/awww"
+    fi
+}
+
 install_debian() {
     info "Using apt..."
     sudo apt update
     sudo apt install -y \
         kitty waybar grim slurp thunar \
         brightnessctl playerctl network-manager-gnome \
-        pavucontrol rofi imagemagick jq bc \
+        pavucontrol rofi imagemagick jq bc curl \
         fonts-jetbrains-mono \
         python3 python3-pip python3-venv python3-gi \
         libgtk-4-dev libadwaita-1-dev swaync \
         xxhash wl-clipboard cliphist cava htop
-    warn "Hyprland, awww, and matugen must be installed manually on Debian/Ubuntu."
+    warn "Hyprland must still be installed manually on Debian/Ubuntu."
+    install_awww_matugen_via_cargo
 }
 
 install_fedora() {
@@ -146,11 +180,11 @@ install_fedora() {
     sudo dnf install -y \
         hyprland kitty waybar grim slurp thunar \
         brightnessctl playerctl network-manager-applet \
-        pavucontrol rofi-wayland swaync ImageMagick jq bc \
+        pavucontrol rofi-wayland swaync ImageMagick jq bc curl \
         jetbrains-mono-fonts \
         gtk4-devel libadwaita-devel \
         xxhash wl-clipboard cliphist cava htop
-    warn "awww and matugen must be installed manually on Fedora."
+    install_awww_matugen_via_cargo
 }
 
 install_opensuse() {
@@ -158,9 +192,9 @@ install_opensuse() {
     sudo zypper install -y \
         hyprland kitty waybar grim slurp thunar \
         brightnessctl playerctl NetworkManager-applet \
-        pavucontrol rofi swaync ImageMagick jq bc \
+        pavucontrol rofi swaync ImageMagick jq bc curl \
         xxhash wl-clipboard cliphist cava htop
-    warn "awww and matugen must be installed manually on openSUSE."
+    install_awww_matugen_via_cargo
 }
 
 install_pkgs() {
@@ -175,9 +209,18 @@ install_pkgs() {
 }
 
 step "Installing packages..."
+
+# Prompt for sudo up front (visibly) since install_pkgs runs backgrounded
+# behind a spinner and a hidden password prompt would look like a hang.
+sudo -v
+( while true; do sudo -n true; sleep 60; done ) 2>/dev/null &
+SUDO_KEEPALIVE_PID=$!
+
 install_pkgs &
 spinner $! "Downloading and installing packages..."
 wait
+
+kill "$SUDO_KEEPALIVE_PID" 2>/dev/null
 
 success "Packages installed!"
 
@@ -207,7 +250,7 @@ mkdir -p "$HOME/.cache/wallpaper-thumbs"
 # ─────────────────────────────────────────
 # CLONE CONFIG REPO
 # ─────────────────────────────────────────
-step "Fetching configs from Maty156/.config..."
+step "Fetching configs from Maty156/dotfile..."
 
 if ! command -v git &>/dev/null; then
     error "git is required but not installed."
