@@ -113,7 +113,7 @@ install_arch() {
         xdg-desktop-portal-hyprland \
         gtk4 libadwaita gtk-layer-shell \
         python python-pip python-virtualenv python-gobject uwsm \
-        awww xxhash wl-clipboard cliphist cava htop
+        awww xxhash wl-clipboard cliphist cava htop matugen
 
     if ! command -v yay &>/dev/null; then
         info "Installing yay..."
@@ -123,8 +123,8 @@ install_arch() {
         rm -rf /tmp/yay-install
     fi
 
-    # matugen (AUR binary, avoids needing a Rust toolchain) + bibata cursors + wlogout
-    yay -S --needed --noconfirm matugen-bin bibata-cursor-theme wlogout
+    # bibata cursors + wlogout aren't in the official repos, still need AUR
+    yay -S --needed --noconfirm bibata-cursor-theme wlogout
 }
 
 install_debian() {
