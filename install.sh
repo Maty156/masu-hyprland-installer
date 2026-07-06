@@ -124,7 +124,7 @@ install_arch() {
         xdg-desktop-portal-hyprland \
         gtk4 libadwaita gtk-layer-shell \
         python python-pip python-virtualenv python-gobject uwsm \
-        awww xxhash wl-clipboard cliphist cava htop matugen
+        awww xxhash wl-clipboard cliphist cava htop matugen adw-gtk-theme
 
     if ! command -v yay &>/dev/null; then
         info "Installing yay..."
@@ -181,7 +181,7 @@ install_fedora() {
         hyprland kitty waybar grim slurp thunar \
         brightnessctl playerctl network-manager-applet \
         pavucontrol rofi-wayland swaync ImageMagick jq bc curl \
-        jetbrains-mono-fonts \
+        jetbrains-mono-fonts adw-gtk3-theme \
         gtk4-devel libadwaita-devel \
         xxhash wl-clipboard cliphist cava htop
     install_awww_matugen_via_cargo
