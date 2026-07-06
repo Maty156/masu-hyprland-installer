@@ -111,7 +111,6 @@ fi
 # ─────────────────────────────────────────
 # INSTALL PACKAGES
 # ─────────────────────────────────────────
-step "Installing packages..."
 
 install_arch() {
     info "Using pacman..."
@@ -126,16 +125,35 @@ install_arch() {
         python python-pip python-virtualenv python-gobject uwsm \
         awww xxhash wl-clipboard cliphist cava htop matugen adw-gtk-theme
 
-    if ! command -v yay &>/dev/null; then
-        info "Installing yay..."
-        sudo pacman -S --needed --noconfirm git base-devel
-        git clone https://aur.archlinux.org/yay.git /tmp/yay-install
-        cd /tmp/yay-install && makepkg -si --noconfirm && cd -
-        rm -rf /tmp/yay-install
-    fi
-
-    # bibata cursors + wlogout aren't in the official repos, still need AUR
+    # bibata cursors + wlogout aren't in the official repos — needs yay,
+    # which must already be installed by ensure_yay() before this runs.
     yay -S --needed --noconfirm bibata-cursor-theme wlogout
+}
+
+# ─── yay bootstrap (Arch-family only) ───────────────────────────────
+# Runs in the FOREGROUND, never behind the spinner: makepkg -si needs an
+# interactive sudo prompt, and a spinner redrawing the same terminal line
+# at the same time corrupts that prompt (looks like "3 incorrect password
+# attempts" even with the right password). Keeping this synchronous and
+# visible avoids that entirely.
+ensure_yay() {
+    if command -v yay &>/dev/null; then
+        info "yay already installed — skipping."
+        return
+    fi
+    info "yay not found — installing it now (you may be asked for your sudo password)..."
+    sudo pacman -S --needed --noconfirm git base-devel
+    rm -rf /tmp/yay-install
+    git clone https://aur.archlinux.org/yay.git /tmp/yay-install
+    (cd /tmp/yay-install && makepkg -si --noconfirm)
+    rm -rf /tmp/yay-install
+
+    if command -v yay &>/dev/null; then
+        success "yay installed!"
+    else
+        warn "yay install failed. Install it manually and re-run this script:"
+        warn "  git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si"
+    fi
 }
 
 # ─── Rust/cargo fallback for awww + matugen (non-Arch distros) ─────
@@ -215,6 +233,12 @@ step "Installing packages..."
 sudo -v
 ( while true; do sudo -n true; sleep 60; done ) 2>/dev/null &
 SUDO_KEEPALIVE_PID=$!
+
+# yay must be bootstrapped in the foreground BEFORE we background anything —
+# see ensure_yay() above for why.
+case "$DISTRO" in
+    arch|blackarch|manjaro) ensure_yay ;;
+esac
 
 install_pkgs &
 spinner $! "Downloading and installing packages..."
