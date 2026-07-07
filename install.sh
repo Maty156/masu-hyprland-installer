@@ -241,8 +241,9 @@ case "$DISTRO" in
 esac
 
 install_pkgs &
-spinner $! "Downloading and installing packages..."
-wait
+INSTALL_PID=$!
+spinner "$INSTALL_PID" "Downloading and installing packages..."
+wait "$INSTALL_PID"
 
 kill "$SUDO_KEEPALIVE_PID" 2>/dev/null
 
@@ -282,8 +283,9 @@ fi
 
 info "Cloning $CONFIG_REPO..."
 git clone --depth=1 "$CONFIG_REPO" "$CONFIG_TMP" &
-spinner $! "Cloning config repo..."
-wait
+CLONE_PID=$!
+spinner "$CLONE_PID" "Cloning config repo..."
+wait "$CLONE_PID"
 success "Config repo cloned!"
 
 # ─────────────────────────────────────────
